@@ -1,18 +1,17 @@
 #include <Arduino.h>
-
-// put function declarations here:
-int myFunction(int, int);
+#include "user.h"
 
 void setup() {
-    // put your setup code here, to run once:
-    int result = myFunction(2, 3);
+    /* --------------------  MISC Display  --------------------*/
+    Serial.begin(115200);  // Setup the serial consol
+
+    /* --------------------  Setup Display  --------------------*/
+    Button::Button btn;
+    btn.init();
+    /* --------------------  Setup Sensors  --------------------*/
 }
 
 void loop() {
-    // put your main code here, to run repeatedly:
-}
-
-// put function definitions here:
-int myFunction(int x, int y) {
-    return x + y;
+    Serial.println("Hello");
+    delay(1000);
 }
