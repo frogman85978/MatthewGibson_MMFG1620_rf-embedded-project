@@ -42,8 +42,16 @@ public:
         return registered;
     }
 
-
+    /** * @brief Registers the passed LED to the blink task
+     *
+     * @param led The LED object to register
+     */
     void registerLED(LED * led) {
+        // Start the led blink task if its not already running
+        if (led_blink_task_handle == nullptr) {
+            start();
+        }
+
         xSemaphoreTake(mutex, portMAX_DELAY);
         // Make sure the LED isn't already registered
         if (isRegisteredInternal(led)) {
@@ -51,8 +59,15 @@ public:
         }
         leds.push_back(led);
         xSemaphoreGive(mutex);
+
+        led->blinkRegistered = true;
     }
 
+    /**
+     * @brief Un-Register the passed LED from the blink task
+     *
+     * @param led The LED object to un-register
+     */
     void unregisterLED(LED * led) {
         xSemaphoreTake(mutex, portMAX_DELAY);
         // Find the instance of the LED in the list of registered LEDs
@@ -63,6 +78,12 @@ public:
             }
         }
         xSemaphoreGive(mutex);
+        led->blinkRegistered = false;
+
+        // Stop the task if there are no more LEDs in the list
+        if (leds.size() == 0) {
+            stop();
+        }
     }
 
     /**
@@ -70,7 +91,18 @@ public:
      */
     void start(void) {
         if (led_blink_task_handle == nullptr) {
-            xTaskCreate(blinkTaskHandler, "BlinkManager", 2048, this, 2, nullptr);
+            xTaskCreate(blinkTaskHandler, "BlinkManager", 2048, this, 2, &led_blink_task_handle);
+        }
+    }
+
+    /**
+     * @brief Stops the LED Blink task
+     * @attention DO NOT CALL THIS FROM WITHIN THE BLINK TASK
+     */
+    void stop(void) {
+        if (led_blink_task_handle != nullptr) {
+            vTaskDelete(led_blink_task_handle);
+            led_blink_task_handle = NULL;
         }
     }
 
@@ -103,8 +135,9 @@ private:
             xSemaphoreTake(manager->mutex, portMAX_DELAY);
 
             for (auto & led : manager->leds) {
-                led->update(now);
+                led->updateLED(now);
             }
+
             xSemaphoreGive(manager->mutex);
             vTaskDelayUntil(&lastWakeTime, pdMS_TO_TICKS(10));
         }
@@ -128,72 +161,70 @@ private:
 
 /* ====================  LED Class  ==================== */
 
-class LED {
-private:
-    uint8_t pin;  // Var used to store the pin number for the LED
-    TickType_t period;  // The period to blink the LED at
-    TickType_t phaseOffset;  // The phase offset to apply to the LED blink
-    TickType_t lastToggle;  // The time of the last LED toggle
+/* --------------------  Setup Functions  -------------------- */
 
-    // void update(TickType_t now) {
-    // TODO
-        // TickType_t elapsed = (now + phaseOffset) % period;
-    // }
-public:
-    /* --------------------  Setup Functions  -------------------- */
-    static void update(TickType_t now);
+/**
+ * @brief Construct a new LED::LED object
+ * This object is used to control the external LEDs
+ * @param pinNum The pin number the LED is attached to
+ * @param is_RGB Set to True if the LED is an addressable RGB LED
+ */
+LED::LED(const uint8_t pinNum, const bool is_RGB) {
+    this->pin = (gpio_num_t)pinNum;
+    this->is_RGB = is_RGB;
 
-    /**
-     * @brief Construct a new LED::LED object
-     * This object is used to control the external LEDs
-     * @param pin
-     */
-    LED(const uint8_t pinNum) {
-        this->pin = pinNum;
+    pinMode(this->pin, OUTPUT);
+}
 
-        pinMode(this->pin, OUTPUT);
+/**
+ * @brief Destroy the LED::LED object
+ * Resets pin to Input
+ */
+LED::~LED() {
+    stop_blinking();
+    pinMode(this->pin, INPUT);
+}
+
+
+/* --------------------  Blink Functions  -------------------- */
+
+/**
+ * @brief Start blinking the LED at a specified period and phase offset from the other LEDs
+ *
+ * @param period The period to blink the LEDs at
+ * @param phaseOffset The phase offset to blink this led compared to the other LEDs
+ */
+void LED::start_blinking(const int period, const int phaseOffset) {
+    this->period = pdMS_TO_TICKS(period);
+    this->phaseOffset = pdMS_TO_TICKS(phaseOffset);
+    BlinkManager::getInstance().registerLED(this);
+}
+
+/**
+ * @brief Stops blinking the LED
+ */
+void LED::stop_blinking(void) {
+    BlinkManager::getInstance().unregisterLED(this);
+    gpio_set_level(pin, LOW);
+}
+
+/**
+ * @brief Internal function used to update the LED from the LED blink task
+ *
+ * @param now The current time in ticks
+ */
+void LED::updateLED(TickType_t now) {
+    TickType_t elapsed = (now + phaseOffset) % period;
+    bool newState = elapsed < (period / 2);
+    if (newState != state) {
+        gpio_set_level(pin, newState);
+        state = newState;
     }
-
-    /**
-     * @brief Destroy the LED::LED object
-     * Resets pin to Input
-     */
-    ~LED() {
-        // TODO add function to stop blinking the LED
-        pinMode(this->pin, INPUT);
-    }
-
-
-    /* --------------------  Blink Functions  -------------------- */
-
-    /**
-     * @brief Start blinking the LED at a specified period and phase offset from the other LEDs
-     *
-     * @param period The period to blink the LEDs at
-     * @param phaseOffset The phase offset to blink this led compared to the other LEDs
-     */
-    void start_blinking(const TickType_t period, const TickType_t phaseOffset = 0) {
-        this->period = period;
-        this->phaseOffset = phaseOffset;
-
-        // TODO
-    }
-
-    /**
-     * @brief Stops the led from blinking
-     */
-    void stop_blinking(void) {
-        // TODO
-    }
-    void on(void) {
-
-    }
-
-};
-
+}
 
 
 /* ====================  LED Initializers  ==================== */
 
 LED red_led(IO_LED_1);
 LED green_led(IO_LED_2);
+//LED rgb_led(IO_LED_RGB);
