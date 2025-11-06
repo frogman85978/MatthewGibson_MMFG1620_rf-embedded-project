@@ -1,0 +1,11 @@
+menu "MatthewGibson Project Configuration"
+menu "IO Configurations"
+config IO_LED_1
+    int
+    prompt "Led 1 (Green) Pin"
+    default -1
+    help
+        The gpio number used for the green LED
+        Set to -1 to disable
+endmenu  # IO Configurations
+endmenu  # MatthewGibson Project Configuration
