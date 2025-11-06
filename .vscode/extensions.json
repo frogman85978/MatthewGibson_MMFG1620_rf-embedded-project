@@ -1,10 +1,13 @@
 {
-    // See http://go.microsoft.com/fwlink/?LinkId=827846
-    // for the documentation about the extensions.json format
-    "recommendations": [
-        "platformio.platformio-ide"
-    ],
-    "unwantedRecommendations": [
-        "ms-vscode.cpptools-extension-pack"
-    ]
+  // See http://go.microsoft.com/fwlink/?LinkId=827846
+  // for the documentation about the extensions.json format
+  "recommendations": [
+    "platformio.platformio-ide",
+    "esbenp.prettier-vscode",
+    "gruntfuggly.todo-tree",
+    "mhutchie.git-graph",
+    "streetsidesoftware.code-spell-checker",
+    "pkief.material-icon-theme"
+  ],
+  "unwantedRecommendations": ["ms-vscode.cpptools-extension-pack"]
 }
