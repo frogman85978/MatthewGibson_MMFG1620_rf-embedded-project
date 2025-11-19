@@ -5,4 +5,4 @@
 
 #define CONFIG_TOUCH_EN  // Comment to disable Touch and use mechanical buttons instead
 
-#endif  // CELL_H
+#endif  // GENERAL_H
