@@ -4,6 +4,8 @@
 #include <driver/touch_sensor.h>
 // #include "sdkconfig.h"
 #include "io.h"
+// #include "user.h"
+#include "include/sensors.hpp"
 
 #define IO_LED_1 0
 bool t1 = false;

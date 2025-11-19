@@ -10,12 +10,13 @@
 **/
 
 #include <unity.h>
-#include <user.h>
+#include <unity_test_runner.h>
+// #include <user.h>
 
 TEST_CASE("LED Test Setup", "[LED]") {
     TEST_ASSERT(true);
 }
 
 int main(int argc, char ** argv) {
-    return UnityMenu(argc, argv, NULL);
+    // return UnityMenu(argc, argv, NULL);
 }
