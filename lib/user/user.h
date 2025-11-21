@@ -1,4 +1,5 @@
 /* User interaction functions, including display and status LED controls */
+#include <Arduino.h>
 
 #ifndef USER_H
 #define USER_H
@@ -6,16 +7,6 @@
 /* ====================  Display Functions  ==================== */
 
 /* ====================  LED Functions  ==================== */
-
-/* ====================  Button Functions  ==================== */
-//     class Button {
-//     public:
-//         Button(void);
-
-//         int init(void);
-//         int deinit(void);
-//     };
-
 class LED {
 private:
     gpio_num_t pin;  // Var used to store the pin number for the LED
