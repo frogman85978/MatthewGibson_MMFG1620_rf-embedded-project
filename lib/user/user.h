@@ -37,6 +37,8 @@ public:
     LED(const uint8_t pinNum, const bool is_RGB = false);
     ~LED();
 
+    void set_state(const bool state);
+
     void start_blinking(const int period, const int phaseOffset = 0);
     void stop_blinking(void);
 };
