@@ -4,9 +4,9 @@
 #define IO_H
 
 /* ----------  Touch  ---------- */
-#define IO_TOUCH_1      12      // Touch Input 1
-#define IO_TOUCH_2      14      // Touch Input 2 
-#define IO_TOUCH_3      27      // Touch Input 3
+#define IO_BUTTON_1      12      // Touch Input 1
+#define IO_BUTTON_2      14      // Touch Input 2 
+#define IO_BUTTON_3      27      // Touch Input 3
 
 /* ----------  LED Outputs  ---------- */
 #define IO_LED_1        0       // Red LED Output
