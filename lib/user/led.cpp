@@ -209,6 +209,21 @@ void LED::stop_blinking(void) {
 }
 
 /**
+ * @brief Set the LED to a specific state
+ *
+ * @param state The state to set the LED
+ */
+void LED::set_state(const bool state) {
+    // Stop blinking the led if it is already
+    if (this->blinkRegistered) {
+        this->stop_blinking();
+    }
+
+    // Set the LED to a specific state
+    gpio_set_level(pin, state);
+}
+
+/**
  * @brief Internal function used to update the LED from the LED blink task
  *
  * @param now The current time in ticks
