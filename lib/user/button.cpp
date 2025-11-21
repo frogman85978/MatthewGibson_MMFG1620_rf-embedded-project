@@ -22,6 +22,7 @@
 Button::Button(const uint8_t pinNum) {
     this->pin = (gpio_num_t)pinNum;
     gpio_set_direction(this->pin, GPIO_MODE_INPUT);
+    gpio_set_pull_mode(this->pin, GPIO_PULLDOWN_ONLY);
 }
 
 Button::~Button() {}
