@@ -43,4 +43,27 @@ public:
 
 extern LED red_led;
 extern LED green_led;
+
+/* ====================  Button Functions  ==================== */
+/**
+ * @brief Class containing functions for detecting button presses
+ *
+ */
+class Button {
+private:
+    gpio_num_t pin;  // Var used to store the pin number for the LED
+    touch_value_t threshold_value;  // Used to store the touch threshold value
+
+public:
+    Button(const uint8_t pinNum);
+    ~Button();
+
+    void attachInterrupt(void (*interrupt_function)());
+    void detachInterrupt(void);
+};
+
+extern Button button1;
+extern Button button2;
+extern Button button3;
+
 #endif  // USER_H

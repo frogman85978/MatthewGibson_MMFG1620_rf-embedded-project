@@ -8,36 +8,48 @@
  * @copyright Copyright (c) 2025
  *
  */
+#include "user.h"
+#include "io.h"
 #include "config.h"
 #ifndef CONFIG_TOUCH_EN
 #include <Arduino.h>
-#include "io.h"
 
- // class Button {
- // public:
+ /**
+  * @brief Construct a new Button:: Button object
+  * This object is used to interface with the touch buttons
+  * @param pinNum The pin number the LED is attached to
+  */
+Button::Button(const uint8_t pinNum) {
+    this->pin = (gpio_num_t)pinNum;
+    gpio_set_direction(this->pin, GPIO_MODE_INPUT);
+}
+
+Button::~Button() {}
 
 /**
  * @brief Initialize button interface and setup interrupts
  *
- * @return int Return Status
- * @retval 0 Success
- * @retval 1 Failed
+ * @param interrupt_function The function to call when an interrupt to ocur
  */
-int init(void) {
-    return 0;  // Success
+void Button::attachInterrupt(void (*interrupt_function)()) {
+    gpio_intr_enable(this->pin);
+    gpio_set_intr_type(this->pin, GPIO_INTR_POSEDGE);
+    gpio_isr_handler_add(this->pin, (void (*)(void *))interrupt_function, NULL);
 }
 
 /**
- * @brief De-Initialize button interface and detach interrupts
- *
- * @return int Return Status
- * @retval 0 Success
- * @retval 1 Failed
+ * @brief Detach the Interrupt from the button
  */
-int deinit(void) {
-    return 0;  // Success
+void Button::detachInterrupt(void) {
+    gpio_intr_disable(this->pin);
+    gpio_set_intr_type(this->pin, GPIO_INTR_DISABLE);
+    gpio_isr_handler_remove(this->pin);
 }
 
-// }
+/* --------------------  Setup Buttons  -------------------- */
+Button button1(IO_BUTTON_1);
+Button button2(IO_BUTTON_2);
+Button button3(IO_BUTTON_3);
+
 
 #endif  // CONFIG_BUTTON_EN
