@@ -49,6 +49,7 @@ void test_button_1(void) {
             TEST_PASS();
         }
     }
+    button1.detachInterrupt();
 
     // Function Timed out
     TEST_FAIL_MESSAGE("Button press not detected after 10s");
@@ -70,6 +71,7 @@ void test_button_2(void) {
             TEST_PASS();
         }
     }
+    button2.detachInterrupt();
 
     // Function Timed out
     TEST_FAIL_MESSAGE("Button press not detected after 10s");
@@ -91,6 +93,7 @@ void test_button_3(void) {
             TEST_PASS();
         }
     }
+    button3.detachInterrupt();
 
     // Function Timed out
     TEST_FAIL_MESSAGE("Button press not detected after 10s");
